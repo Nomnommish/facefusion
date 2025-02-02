@@ -1,8 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cu124
+opencv-python-headless==4.10.0.84
+torch==2.5.1+cu124
+torch==2.5.1
+torchvision==0.20.1+cu124
 filetype==1.2.0
 gradio==5.9.1
 gradio-rangeslider==0.0.8
 numpy==2.2.0
 onnx==1.17.0
+onnxruntime-gpu==1.20.1
 onnxruntime==1.20.1
 opencv-python==4.10.0.84
 psutil==6.1.1
