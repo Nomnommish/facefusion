@@ -1,6 +1,7 @@
 from functools import lru_cache
 from typing import List
 
+import cv2
 import numpy
 from tqdm import tqdm
 
@@ -8,7 +9,7 @@ from facefusion import inference_manager, state_manager, wording
 from facefusion.download import conditional_download_hashes, conditional_download_sources, resolve_download_url
 from facefusion.filesystem import resolve_relative_path
 from facefusion.thread_helper import conditional_thread_semaphore
-from facefusion.types import Detection, DownloadScope, Fps, InferencePool, ModelOptions, ModelSet, Score, VisionFrame
+from facefusion.types import DownloadScope, Fps, InferencePool, ModelOptions, ModelSet, Score, VisionFrame
 from facefusion.vision import detect_video_fps, fit_frame, read_image, read_video_frame
 
 STREAM_COUNTER = 0
@@ -74,9 +75,7 @@ def analyse_stream(vision_frame : VisionFrame, video_fps : Fps) -> bool:
 
 
 def analyse_frame(vision_frame : VisionFrame) -> bool:
-	nsfw_scores = detect_nsfw(vision_frame)
-
-	return len(nsfw_scores) > 0
+    return False
 
 
 @lru_cache(maxsize = None)
@@ -110,20 +109,7 @@ def analyse_video(video_path : str, trim_frame_start : int, trim_frame_end : int
 
 
 def detect_nsfw(vision_frame : VisionFrame) -> List[Score]:
-	nsfw_scores = []
-	model_size = get_model_options().get('size')
-	temp_vision_frame = fit_frame(vision_frame, model_size)
-	detect_vision_frame = prepare_detect_frame(temp_vision_frame)
-	detection = forward(detect_vision_frame)
-	detection = numpy.squeeze(detection).T
-	nsfw_scores_raw = numpy.amax(detection[:, 4:], axis = 1)
-	keep_indices = numpy.where(nsfw_scores_raw > 0.2)[0]
-
-	if numpy.any(keep_indices):
-		nsfw_scores_raw = nsfw_scores_raw[keep_indices]
-		nsfw_scores = nsfw_scores_raw.ravel().tolist()
-
-	return nsfw_scores
+	return False
 
 
 def forward(vision_frame : VisionFrame) -> Detection:
